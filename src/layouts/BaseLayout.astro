@@ -13,6 +13,7 @@ const T = t(locale);
 const canonicalUrl = Astro.url.href;
 const siteOrigin = Astro.url.origin;
 const ogImage = `${siteOrigin}/og.png`;
+const gaId = import.meta.env.PUBLIC_GA_ID;
 const ogLocale = locale === "es" ? "es_ES" : "en_US";
 const ogLocaleAlt = locale === "es" ? "en_US" : "es_ES";
 
@@ -91,6 +92,19 @@ const jsonLd = {
 
     <!-- JSON-LD -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Google Analytics -->
+    {gaId && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+        <script define:vars={{ gaId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag('js', new Date());
+          gtag('config', gaId);
+        </script>
+      </>
+    )}
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
