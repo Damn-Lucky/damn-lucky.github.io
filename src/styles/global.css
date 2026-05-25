@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #0a0a0f;
+  --color-bg-secondary: #12121a;
+  --color-bg-tertiary: #1a1a26;
+  --color-bg-elevated: #22222f;
+  --color-bg-hover: #2a2a3a;
+
+  --color-accent: #00ff88;
+  --color-accent-dim: #00cc6a;
+  --color-accent-glow: rgba(0, 255, 136, 0.15);
+  --color-accent-subtle: rgba(0, 255, 136, 0.08);
+
+  --color-danger: #ff4757;
+  --color-warning: #ffa502;
+  --color-info: #3b82f6;
+
+  --color-text-primary: #e8e8f0;
+  --color-text-secondary: #8888a0;
+  --color-text-muted: #55556a;
+
+  --color-border: #2a2a3a;
+  --color-border-light: #3a3a4a;
+
+  --font-display: "JetBrains Mono", monospace;
+  --font-body: "Space Grotesk", sans-serif;
+
+  --shadow-glow: 0 0 20px rgba(0, 255, 136, 0.3);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-bg-primary);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-light);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-muted);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-accent text-bg-primary font-display font-bold text-sm uppercase tracking-wider rounded-lg transition-all duration-300 hover:shadow-glow hover:scale-105 active:scale-95 cursor-pointer;
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 border border-border-light text-text-primary font-display text-sm uppercase tracking-wider rounded-lg transition-all duration-300 hover:border-accent hover:text-accent hover:bg-accent-subtle cursor-pointer;
+  }
+
+  .card {
+    @apply bg-bg-secondary border border-border rounded-xl p-6 transition-all duration-300 hover:border-border-light hover:shadow-card;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-bg-tertiary border border-border rounded-lg text-text-primary font-body text-sm placeholder-text-muted focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-3 py-1 bg-accent-subtle border border-accent/20 text-accent font-display text-xs uppercase tracking-wider rounded-full;
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+}

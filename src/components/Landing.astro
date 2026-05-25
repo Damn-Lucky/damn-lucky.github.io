@@ -1,0 +1,159 @@
+---
+import type { Locale } from "@/i18n";
+import { t } from "@/i18n";
+import WaitlistForm from "./WaitlistForm.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const T = t(locale);
+
+const featureIcons = [
+  // Real-time
+  `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />`,
+  // Probability
+  `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />`,
+  // Opportunity
+  `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />`,
+  // UX
+  `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" />`,
+  // Speed
+  `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />`,
+  // Decisions
+  `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />`,
+];
+---
+
+<!-- HERO -->
+<section
+  class="relative min-h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden"
+>
+  <div
+    class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--color-accent-glow)_0%,_transparent_70%)] opacity-30"
+  >
+  </div>
+  <div
+    class="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
+  >
+  </div>
+  <div
+    class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent/5 rounded-full blur-3xl"
+  >
+  </div>
+
+  <div class="relative z-10 max-w-5xl mx-auto px-6 text-center">
+    <div class="badge mb-8">
+      <div class="w-2 h-2 bg-accent rounded-full animate-pulse mr-2"></div>
+      {T.hero.badge}
+    </div>
+
+    <h1
+      class="font-display font-bold leading-none tracking-tight mb-6"
+      style="font-size: clamp(2.5rem, 8vw, 5.5rem);"
+    >
+      <span class="block text-text-primary">{T.hero.headline[0]}</span>
+      <span class="block text-accent glow-text">{T.hero.headline[1]}</span>
+      <span class="block text-text-primary">{T.hero.headline[2]}</span>
+    </h1>
+
+    <p
+      class="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
+    >
+      {T.hero.description}
+    </p>
+
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+      <a href="#waitlist" class="btn-primary">
+        {T.hero.cta}
+      </a>
+      <a href="#about" class="btn-secondary">
+        {T.hero.ctaSecondary}
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-24 border-t border-border">
+  <div class="max-w-4xl mx-auto px-6">
+    <div class="badge mb-8 mx-auto w-fit">{T.about.badge}</div>
+    <h2
+      class="font-display font-bold text-center mb-8 leading-tight"
+      style="font-size: clamp(1.75rem, 4.5vw, 3rem);"
+      set:html={T.about.title.replace("\n", "<br />")}
+    />
+    <p class="text-text-secondary text-lg leading-relaxed text-center mb-6">
+      {T.about.body}
+    </p>
+    <p class="text-text-muted text-base leading-relaxed text-center">
+      {T.about.vision}
+    </p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-24 border-t border-border">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="badge mb-6 mx-auto w-fit">{T.features.badge}</div>
+      <h2 class="font-display text-2xl md:text-3xl lg:text-4xl font-bold">
+        {T.features.title}
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        T.features.items.map((item, i) => (
+          <div class="card group">
+            <div class="w-12 h-12 bg-accent-subtle border border-accent/20 rounded-lg flex items-center justify-center mb-6 group-hover:shadow-glow transition-all duration-300">
+              <svg
+                class="w-6 h-6 text-accent"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                set:html={featureIcons[i]}
+              />
+            </div>
+            <h3 class="font-display text-lg font-semibold mb-3">
+              {item.title}
+            </h3>
+            <p class="text-text-secondary text-sm leading-relaxed">
+              {item.description}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="py-24 border-t border-border">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <blockquote
+      class="font-display text-2xl md:text-3xl text-text-primary leading-snug mb-8 glow-text"
+    >
+      {T.philosophy.quote}
+    </blockquote>
+    <div class="w-16 h-px bg-accent mx-auto mb-8 opacity-50"></div>
+    <p class="font-display text-sm uppercase tracking-widest text-accent">
+      {T.philosophy.tagline}
+    </p>
+  </div>
+</section>
+
+<!-- WAITLIST -->
+<section id="waitlist" class="py-24 border-t border-border">
+  <div class="max-w-2xl mx-auto px-6 text-center">
+    <div class="badge mb-8 mx-auto w-fit">{T.waitlist.badge}</div>
+    <h2 class="font-display text-2xl md:text-3xl lg:text-4xl font-bold mb-4">
+      {T.waitlist.title}
+    </h2>
+    <p class="text-text-secondary text-lg mb-10 leading-relaxed">
+      {T.waitlist.description}
+    </p>
+    <WaitlistForm locale={locale} />
+  </div>
+</section>

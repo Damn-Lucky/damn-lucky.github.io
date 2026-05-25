@@ -1,0 +1,67 @@
+---
+import type { Locale } from "@/i18n";
+import { t } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const T = t(locale).waitlist;
+const formId = `waitlist-${locale}`;
+---
+
+<div
+  data-fs-success
+  class="hidden text-accent font-display text-sm text-center py-4"
+>
+  {T.success}
+</div>
+<div
+  data-fs-error
+  class="hidden text-danger font-display text-sm text-center py-2"
+>
+</div>
+
+<form
+  id={formId}
+  action="https://formspree.io/f/meedlbpp"
+  method="POST"
+  class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+>
+  <div class="flex-1">
+    <input
+      type="email"
+      id={`${formId}-email`}
+      name="email"
+      required
+      placeholder={T.placeholder}
+      class="input-field w-full"
+      autocomplete="email"
+      data-fs-field
+    />
+    <span
+      data-fs-error="email"
+      class="text-danger font-display text-xs mt-1 block"></span>
+  </div>
+  <input type="hidden" name="_captcha" value="true" />
+  <button
+    type="submit"
+    class="btn-primary whitespace-nowrap"
+    data-fs-submit-btn
+  >
+    {T.cta}
+  </button>
+</form>
+
+<p class="text-text-muted text-xs text-center mt-4">{T.disclaimer}</p>
+
+<script define:vars={{ formId }}>
+  window.formspree =
+    window.formspree ||
+    function () {
+      (formspree.q = formspree.q || []).push(arguments);
+    };
+  formspree("initForm", { formElement: `#${formId}`, formId: "meedlbpp" });
+</script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
