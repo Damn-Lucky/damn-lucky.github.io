@@ -9,24 +9,17 @@ interface Props {
 const { locale } = Astro.props;
 const T = t(locale).waitlist;
 const formId = `waitlist-${locale}`;
+const recaptchaSiteKey = "6LfOSv4sAAAAAN_3c-Te-bx_J8mlNm-DuEHBkZpa";
+const FORMSPREE_FORM_ID = "meedlbpp";
 ---
 
-<div
-  data-fs-success
-  class="hidden text-accent font-display text-sm text-center py-4"
->
+<div id={`${formId}-success`} class="hidden text-accent font-display text-sm text-center py-4">
   {T.success}
 </div>
-<div
-  data-fs-error
-  class="hidden text-danger font-display text-sm text-center py-2"
->
-</div>
+<div id={`${formId}-error`} class="hidden text-danger font-display text-sm text-center py-2"></div>
 
 <form
   id={formId}
-  action="https://formspree.io/f/meedlbpp"
-  method="POST"
   class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
 >
   <div class="flex-1">
@@ -38,17 +31,13 @@ const formId = `waitlist-${locale}`;
       placeholder={T.placeholder}
       class="input-field w-full"
       autocomplete="email"
-      data-fs-field
     />
-    <span
-      data-fs-error="email"
-      class="text-danger font-display text-xs mt-1 block"></span>
+    <span id={`${formId}-email-error`} class="text-danger font-display text-xs mt-1 block"></span>
   </div>
-  <input type="hidden" name="_captcha" value="true" />
   <button
     type="submit"
+    id={`${formId}-submit-btn`}
     class="btn-primary whitespace-nowrap"
-    data-fs-submit-btn
   >
     {T.cta}
   </button>
@@ -56,12 +45,101 @@ const formId = `waitlist-${locale}`;
 
 <p class="text-text-muted text-xs text-center mt-4">{T.disclaimer}</p>
 
-<script define:vars={{ formId }}>
-  window.formspree =
-    window.formspree ||
-    function () {
-      (formspree.q = formspree.q || []).push(arguments);
-    };
-  formspree("initForm", { formElement: `#${formId}`, formId: "meedlbpp" });
+<script is:inline>
+  (function () {
+    var script = document.createElement("script");
+    script.src = "https://www.google.com/recaptcha/api.js?render=6LfOSv4sAAAAAN_3c-Te-bx_J8mlNm-DuEHBkZpa";
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  })();
 </script>
-<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+
+<script define:vars={{ formId, recaptchaSiteKey, FORMSPREE_FORM_ID, T }}>
+  (function () {
+    var form = document.getElementById(formId);
+    var submitBtn = document.getElementById(formId + "-submit-btn");
+    var successEl = document.getElementById(formId + "-success");
+    var errorEl = document.getElementById(formId + "-error");
+    var emailErrorEl = document.getElementById(formId + "-email-error");
+    var emailInput = document.getElementById(formId + "-email");
+    var FORM_URL = "https://formspree.io/f/" + FORMSPREE_FORM_ID;
+
+    function waitForRecaptcha(callback, retries) {
+      if (retries === undefined) retries = 50;
+      if (window.grecaptcha && window.grecaptcha.execute) {
+        callback();
+        return;
+      }
+      if (retries > 0) {
+        setTimeout(function () {
+          waitForRecaptcha(callback, retries - 1);
+        }, 100);
+      }
+    }
+
+    function resetUI() {
+      submitBtn.disabled = false;
+      submitBtn.textContent = T.cta;
+      errorEl.classList.add("hidden");
+      errorEl.textContent = "";
+      emailErrorEl.textContent = "";
+      emailInput.removeAttribute("aria-invalid");
+    }
+
+    function showSuccess() {
+      form.classList.add("hidden");
+      successEl.classList.remove("hidden");
+    }
+
+    function showError(message) {
+      errorEl.textContent = message;
+      errorEl.classList.remove("hidden");
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      resetUI();
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "...";
+
+      waitForRecaptcha(function () {
+        window.grecaptcha
+          .execute(recaptchaSiteKey, { action: "submit" })
+          .then(function (token) {
+            var formData = new FormData(form);
+            formData.append("g-recaptcha-response", token);
+
+            return fetch(FORM_URL, {
+              method: "POST",
+              body: formData,
+              headers: { Accept: "application/json" },
+            });
+          })
+          .then(function (response) {
+            if (response.ok) {
+              showSuccess();
+            } else {
+              return response.json().then(function (data) {
+                if (data.errors && data.errors.length > 0) {
+                  var firstError = data.errors[0];
+                  if (firstError.field === "email") {
+                    emailErrorEl.textContent = firstError.message;
+                    emailInput.setAttribute("aria-invalid", "true");
+                  }
+                  throw new Error(firstError.message || "Submission failed");
+                }
+                throw new Error(data.error || "Submission failed");
+              });
+            }
+          })
+          .catch(function (err) {
+            showError(err.message || "Something went wrong. Please try again.");
+            submitBtn.disabled = false;
+            submitBtn.textContent = T.cta;
+          });
+      });
+    });
+  })();
+</script>
