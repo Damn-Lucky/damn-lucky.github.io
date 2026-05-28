@@ -1,0 +1,110 @@
+---
+import type { Locale } from "@/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const lang = locale === "es" ? "es-ES" : "en-US";
+const label = locale === "es" ? "Asistente IA" : "AI Assistant";
+const src = `https://cdn.jsdelivr.net/npm/page-agent@1.5.2/dist/iife/page-agent.demo.js?lang=${lang}`;
+---
+
+<!-- Pre-hide the page-agent widget before it initializes to avoid flash -->
+<style id="ai-hide-style">
+  ._wrapper_gtdpc_1 {
+    display: none !important;
+  }
+</style>
+
+<!-- Load the page-agent demo (initializes window.pageAgent) -->
+<script is:inline src={src} async defer></script>
+
+<!-- Custom trigger button — bottom-left -->
+<button
+  id="ai-trigger"
+  aria-label={label}
+  style="
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 2147483640;
+    width: 48px;
+    height: 48px;
+    background: #00ff88;
+    color: #0a0a0f;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,255,136,0.35);
+    transition: box-shadow 0.3s, transform 0.2s;
+  "
+>
+  <svg
+    width="20"
+    height="20"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+    ></path>
+  </svg>
+</button>
+
+<style>
+  #ai-trigger:hover {
+    box-shadow: 0 0 24px rgba(0, 255, 136, 0.55) !important;
+    transform: scale(1.1);
+  }
+  #ai-trigger:active {
+    transform: scale(0.95);
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var btn = document.getElementById("ai-trigger");
+
+    // Wait for window.pageAgent to be initialized by the demo script, then hide it
+    function waitAndHide(retries) {
+      if (retries === undefined) retries = 60;
+      if (window.pageAgent && window.pageAgent.panel) {
+        var wrapper = window.pageAgent.panel.wrapper;
+        if (wrapper) {
+          wrapper.style.setProperty("--width", "520px");
+        }
+        window.pageAgent.panel.hide();
+        return;
+      }
+      if (retries > 0)
+        setTimeout(function () {
+          waitAndHide(retries - 1);
+        }, 100);
+    }
+    waitAndHide();
+
+    btn.addEventListener("click", function () {
+      if (!window.pageAgent || !window.pageAgent.panel) return;
+      var panel = window.pageAgent.panel;
+      var isVisible = panel.wrapper && panel.wrapper.style.display !== "none";
+      // Remove the pre-hide CSS on first open
+      var hideStyle = document.getElementById("ai-hide-style");
+      if (hideStyle) hideStyle.remove();
+      if (isVisible) {
+        panel.hide();
+      } else {
+        panel.show();
+      }
+    });
+  })();
+</script>

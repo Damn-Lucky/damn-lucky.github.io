@@ -78,6 +78,7 @@ export const es = {
     tagline: 'No se necesita suerte.',
     copy: '© 2026 Damn Luck.',
   },
+
 } as const;
 
 export type Translations = typeof es;

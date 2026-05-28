@@ -1,6 +1,7 @@
 ---
 import type { Locale } from "@/i18n";
 import { t } from "@/i18n";
+import AIHelper from "./AIHelper.astro";
 import WaitlistForm from "./WaitlistForm.astro";
 
 interface Props {
@@ -158,3 +159,5 @@ const featureIcons = [
     <WaitlistForm locale={locale} />
   </div>
 </section>
+
+<AIHelper locale={locale} />

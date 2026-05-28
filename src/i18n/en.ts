@@ -80,4 +80,5 @@ export const en: Translations = {
     tagline: 'No luck required.',
     copy: '© 2026 Damn Luck.',
   },
+
 };
